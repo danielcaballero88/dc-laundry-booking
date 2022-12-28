@@ -1,7 +1,9 @@
 """Module for interaction with MongoDB."""
 import os
 
-import pymongo
+import pymongo as pym
+from pymongo import collection as pym_coll
+from pymongo import database as pym_db
 
 URI_FORMAT = "mongodb"
 HOST = os.environ.get("MONGO_HOST")
@@ -16,14 +18,16 @@ class MongoDBConnection:
 
     def __init__(self):
         self.client = None
+        self.client = self.get_client()
 
     def __del__(self):
         self.close_client()
 
-    def open_client(self):
+    def open_client(self) -> pym.MongoClient:
         """Opens a MongoClient if not already open."""
         if self.client is None:
-            self.client = pymongo.MongoClient(URI)
+            self.client = pym.MongoClient(URI)
+        return self.client
 
     def close_client(self):
         """Closes the current MongoClient if currently open."""
@@ -36,6 +40,13 @@ class MongoDBConnection:
         if self.client is None:
             self.open_client()
         return self.client
+
+    def get_coll(self, db_name: str, coll_name: str):
+        """Get a collection."""
+        client: pym.MongoClient = self.client
+        database: pym_db.Database = client[db_name]
+        collection: pym_coll.Collection = database[coll_name]
+        return collection
 
 
 mongo_db_conn = MongoDBConnection()
