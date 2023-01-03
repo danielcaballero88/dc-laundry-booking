@@ -1,0 +1,128 @@
+"""Package with the Laundry Booking logic."""
+import copy
+import datetime as dt
+import typing as t
+
+from laundry_booking import lb_enums as lbe
+from laundry_booking import lb_types as lbt
+
+
+class LaundryBookingManager:
+    """Manager of the laundry room.
+
+    Provides information about the current status of the slots and allows to book/unbook
+    slots, as well as other interactions like request for swaping slots with other
+    users.
+    """
+
+    def __init__(self, target_datetime: dt.datetime, offset: int = 0):
+        self.target_datetime = target_datetime
+        self.offset = offset
+        self.week_dates = self.get_week_dates()
+        self.week_slots = self.get_week_slots()
+
+    def get_week_dates(self) -> list[dt.date]:
+        """Get the dates of a week from a date."""
+        week_starting_date = (
+            self.target_datetime.date()
+            - dt.timedelta(days=self.target_datetime.weekday())
+            + dt.timedelta(days=7 * self.offset)
+        )
+
+        week_dates = [week_starting_date]
+        for n_days in range(1, 7):
+            date = week_starting_date + dt.timedelta(days=n_days)
+            week_dates.append(date)
+
+        return week_dates
+
+    def get_week_slots(
+        self,
+        slots_unavailable: t.Optional[lbt.SlotsTakenDict] = None,
+        slots_booked_by_others: t.Optional[lbt.SlotsTakenDict] = None,
+        slots_booked_by_user: t.Optional[lbt.SlotsTakenDict] = None,
+    ) -> lbt.WeekSlotsDict:
+        """Get the week slots with their statuses."""
+        # TODO (dancab 2023-01-03): Improve efficiency of this code.
+        # At the moment the complexity is O(nxm) because I go over the dates and then
+        # the slots. But since both n and m are small (n=dates=7, m=slots=4) then it's
+        # not a critical improvement at the moment.
+
+        # Initialize week_slots dict with all slots available.
+        week_slots: lbt.WeekSlotsDict = {}
+        for date in self.week_dates:
+            week_slots[date] = {}
+            for slot_id in lbe.slots_times:
+                week_slots[date][slot_id] = lbe.SlotsStatus.AVAILABLE.value
+
+        # Set correct status for already booked slots.
+        if slots_booked_by_user:
+            week_slots = self.assign_slots_statuses(
+                week_slots=week_slots,
+                taken_slots=slots_booked_by_user,
+                taken_status=lbe.SlotsStatus.BOOKED_BY_USER.value,
+            )
+        if slots_booked_by_others:
+            week_slots = self.assign_slots_statuses(
+                week_slots=week_slots,
+                taken_slots=slots_booked_by_others,
+                taken_status=lbe.SlotsStatus.BOOKED_BY_OTHER.value,
+            )
+
+        # Set the correct status for unavailable slots, also adding the
+        # past slots as unavailable.
+        slots_past: lbt.SlotsTakenDict = {}
+
+        for date, date_slots in week_slots.items():
+            if date > self.target_datetime.date():
+                # Don't use 'break' because not sure if the dates are
+                # looped in order.
+                continue
+            slots_past[date] = []
+
+            for slot_id in date_slots:
+                slot_start_time = dt.time(hour=lbe.slots_times[slot_id]["start_time"])
+                if slot_start_time > self.target_datetime.time():
+                    # Don't use 'break' because not sure if the slot ids
+                    # are looped in order.
+                    continue
+                else:
+                    slots_past[date].append(slot_id)
+
+        all_slots_unavailable: lbt.SlotsTakenDict = {}
+        if not slots_unavailable:
+            all_slots_unavailable = slots_past
+        else:
+            for date in week_slots:
+                # Append both lists of slots (past and unavailable) into
+                # a single list. There may be repeated slots but it
+                # isn't critical to avoid that at the moment.
+                all_slots_unavailable[date] = slots_past[date] + slots_unavailable[date]
+
+        if slots_unavailable:
+            week_slots = self.assign_slots_statuses(
+                week_slots=week_slots,
+                taken_slots=all_slots_unavailable,
+                taken_status=lbe.SlotsStatus.UNAVAILABLE.value,
+            )
+
+        # That's it.
+        return week_slots
+
+    @staticmethod
+    def assign_slots_statuses(
+        week_slots: lbt.WeekSlotsDict,
+        taken_slots: lbt.SlotsTakenDict,
+        taken_status: lbt.SlotStatusIdInt,
+    ) -> lbt.WeekSlotsDict:
+        """Assign correct status to week slots."""
+        # Start with a copy of the input week slots.
+        result_week_slots: lbt.WeekSlotsDict = copy.deepcopy(week_slots)
+        # Go over the dates and see if any date has taken slots.
+        for date in week_slots:
+            if date in taken_slots:
+                # If so, go over the taken slots and assign the correct status to them.
+                for slot_id in taken_slots[date]:
+                    result_week_slots[date][slot_id] = taken_status
+        # And return the modified copy.
+        return result_week_slots
