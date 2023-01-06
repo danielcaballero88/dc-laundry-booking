@@ -25,4 +25,8 @@ async def hello_world():
     return {"Hello": "World"}
 
 
-app.include_router(auth_router.router)
+app.include_router(
+    auth_router.router,
+    prefix="/auth",
+    tags=["auth"],
+)

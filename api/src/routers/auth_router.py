@@ -13,7 +13,7 @@ user_coll = mongodb.mongo_db_conn.get_coll(
 authenticator = auth.Authenticator(user_coll=user_coll)
 
 
-router = fa.APIRouter(tags=["auth"])
+router = fa.APIRouter()
 
 
 @router.post("/register")
