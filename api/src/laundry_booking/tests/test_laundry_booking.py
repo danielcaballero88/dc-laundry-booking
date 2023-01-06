@@ -1,32 +1,52 @@
 """Tests for the laundry_booking module."""
 import datetime as dt
 
-import pytest
+import pytest  # pylint: disable=unused-import
 
+from laundry_booking import laundry_booking as lb
 from laundry_booking import lb_types as lbt
 
 from .data.data_laundry_booking import TEST_DATA
 
 
-class TestLaundryBooking:
+class ParsedTestData:
+    """Tests for the LaundryBooking class"""
+
     def __init__(self) -> None:
         """Instantiate the test class by parsing the test data."""
         self.user_id = TEST_DATA["example"]["user_id"]
-        self.target_datetime = TEST_DATA["example"]["datetime"]
-        self.expected_result = TEST_DATA["example"]["result"]
+        target_datetime_str = TEST_DATA["example"]["datetime"]
+        self.target_datetime = dt.datetime.strptime(
+            target_datetime_str, "%Y-%m-%d %H:%M"
+        )
+        self.expected_result = self.parse_expected_result(
+            TEST_DATA["example"]["result"]
+        )
+        self.booked_by_others, self.booked_by_user = self.parse_bookings()
 
-    def parse_bookings(self) -> None:
+    def parse_expected_result(self, raw_expected_resuslt: dict) -> lbt.WeekSlotsDict:
+        """Parse the expected result to the correct format."""
+        parsed_expected_result: lbt.WeekSlotsDict = {}
+        for date_str, date_slots_dict in raw_expected_resuslt.items():
+            date = dt.datetime.strptime(date_str, "%Y-%m-%d").date()
+            parsed_expected_result[date] = date_slots_dict
+        return parsed_expected_result
+
+    def parse_bookings(self) -> tuple[lbt.SlotsTakenDict, lbt.SlotsTakenDict]:
         """Parse the bookings from the test data into the correct format."""
         booked_by_others: lbt.SlotsTakenDict = {}
         booked_by_user: lbt.SlotsTakenDict = {}
 
         for test_user_id, test_user_dict in TEST_DATA["users"].items():
-            for date_str, slot_id in test_user_dict.items():
-                date = dt.datetime.strptime(date_str, "%Y-%m-%d")
+            test_user_bookings = test_user_dict.get("bookings", {})
+            for date_str, slot_id in test_user_bookings.items():
+                date = dt.datetime.strptime(date_str, "%Y-%m-%d").date()
                 if test_user_id == self.user_id:
                     self.assign_taken_slot(booked_by_user, date, slot_id)
                 else:
                     self.assign_taken_slot(booked_by_others, date, slot_id)
+
+        return booked_by_others, booked_by_user
 
     @staticmethod
     def assign_taken_slot(
@@ -39,3 +59,14 @@ class TestLaundryBooking:
         if date not in taken_slots:
             taken_slots[date] = []
         taken_slots[date].append(slot_id)
+
+
+def test_laundry_booking_manager():
+    parsed_test_data = ParsedTestData()
+    laundry_booking_manager = lb.LaundryBookingManager(
+        target_datetime=parsed_test_data.target_datetime,
+        offset=0,
+        slots_booked_by_others=parsed_test_data.booked_by_others,
+        slots_booked_by_user=parsed_test_data.booked_by_user,
+    )
+    assert laundry_booking_manager.week_slots == parsed_test_data.expected_result

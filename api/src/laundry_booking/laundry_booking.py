@@ -15,9 +15,19 @@ class LaundryBookingManager:
     users.
     """
 
-    def __init__(self, target_datetime: dt.datetime, offset: int = 0):
+    def __init__(
+        self,
+        target_datetime: dt.datetime,
+        offset: int = 0,
+        slots_unavailable: t.Optional[lbt.SlotsTakenDict] = None,
+        slots_booked_by_others: t.Optional[lbt.SlotsTakenDict] = None,
+        slots_booked_by_user: t.Optional[lbt.SlotsTakenDict] = None,
+    ):
         self.target_datetime = target_datetime
         self.offset = offset
+        self.slots_unavailable = slots_unavailable
+        self.slots_booked_by_others = slots_booked_by_others
+        self.slots_booked_by_user = slots_booked_by_user
         self.week_dates = self.get_week_dates()
         self.week_slots = self.get_week_slots()
 
@@ -36,12 +46,7 @@ class LaundryBookingManager:
 
         return week_dates
 
-    def get_week_slots(
-        self,
-        slots_unavailable: t.Optional[lbt.SlotsTakenDict] = None,
-        slots_booked_by_others: t.Optional[lbt.SlotsTakenDict] = None,
-        slots_booked_by_user: t.Optional[lbt.SlotsTakenDict] = None,
-    ) -> lbt.WeekSlotsDict:
+    def get_week_slots(self) -> lbt.WeekSlotsDict:
         """Get the week slots with their statuses."""
         # TODO (dancab 2023-01-03): Improve efficiency of this code.
         # At the moment the complexity is O(nxm) because I go over the dates and then
@@ -56,16 +61,16 @@ class LaundryBookingManager:
                 week_slots[date][slot_id] = lbe.SlotsStatus.AVAILABLE.value
 
         # Set correct status for already booked slots.
-        if slots_booked_by_user:
+        if self.slots_booked_by_user:
             week_slots = self.assign_slots_statuses(
                 week_slots=week_slots,
-                taken_slots=slots_booked_by_user,
+                taken_slots=self.slots_booked_by_user,
                 taken_status=lbe.SlotsStatus.BOOKED_BY_USER.value,
             )
-        if slots_booked_by_others:
+        if self.slots_booked_by_others:
             week_slots = self.assign_slots_statuses(
                 week_slots=week_slots,
-                taken_slots=slots_booked_by_others,
+                taken_slots=self.slots_booked_by_others,
                 taken_status=lbe.SlotsStatus.BOOKED_BY_OTHER.value,
             )
 
@@ -81,8 +86,13 @@ class LaundryBookingManager:
             slots_past[date] = []
 
             for slot_id in date_slots:
-                slot_start_time = dt.time(hour=lbe.slots_times[slot_id]["start_time"])
-                if slot_start_time > self.target_datetime.time():
+                slot_start_datetime = dt.datetime(
+                    year=date.year,
+                    month=date.month,
+                    day=date.day,
+                    hour=lbe.slots_times[slot_id]["start_time"],
+                )
+                if slot_start_datetime > self.target_datetime:
                     # Don't use 'break' because not sure if the slot ids
                     # are looped in order.
                     continue
@@ -90,16 +100,18 @@ class LaundryBookingManager:
                     slots_past[date].append(slot_id)
 
         all_slots_unavailable: lbt.SlotsTakenDict = {}
-        if not slots_unavailable:
+        if not self.slots_unavailable:
             all_slots_unavailable = slots_past
         else:
             for date in week_slots:
                 # Append both lists of slots (past and unavailable) into
                 # a single list. There may be repeated slots but it
                 # isn't critical to avoid that at the moment.
-                all_slots_unavailable[date] = slots_past[date] + slots_unavailable[date]
+                all_slots_unavailable[date] = (
+                    slots_past[date] + self.slots_unavailable[date]
+                )
 
-        if slots_unavailable:
+        if all_slots_unavailable:
             week_slots = self.assign_slots_statuses(
                 week_slots=week_slots,
                 taken_slots=all_slots_unavailable,
