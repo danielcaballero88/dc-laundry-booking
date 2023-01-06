@@ -2,7 +2,7 @@
 import fastapi as fa
 
 import mongodb
-from routers import auth_router
+from routers import auth_router, laundry_booking_router
 
 app = fa.FastAPI()
 
@@ -29,4 +29,10 @@ app.include_router(
     auth_router.router,
     prefix="/auth",
     tags=["auth"],
+)
+
+app.include_router(
+    laundry_booking_router.router,
+    prefix="/booking",
+    tags=["booking"],
 )
