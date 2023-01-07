@@ -1,4 +1,9 @@
-"""Module to interact with the "user" collection."""
+"""Module to interact with the "auth.user" collection.
+
+The collection is assigned to the auth.Authenticator class on initialization and it's
+not necessarily "auth.user", but it can be any desired database and collection can be
+used.
+"""
 
 from __future__ import annotations
 
@@ -32,18 +37,18 @@ class UserDB(UserBase):
 
     @classmethod
     def get(cls, user_coll: pym_coll.Collection, username: str) -> UserDB:
-        """Fetches a user from the DB."""
+        """Fetch a user from the DB."""
         user_dict: Optional[dict] = user_coll.find_one({"_id": username})
         if not user_dict:
             raise fa.HTTPException(
                 status_code=fa.status.HTTP_404_NOT_FOUND,
-                detail="Can't fetch user, username not found in the DB.",
+                detail="Cannot authenticate user, not found in the DB.",
             )
         user_db = cls(**user_dict)
         return user_db
 
     def add(self, user_coll: pym_coll.Collection) -> pym_res.InsertOneResult:
-        """Adds a new user to the DB."""
+        """Add a new user to the DB."""
         try:
             result = user_coll.insert_one({**self.dict(), **{"_id": self.username}})
         except pym_err.DuplicateKeyError as exc:

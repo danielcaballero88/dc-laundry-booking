@@ -26,11 +26,12 @@ class Authenticator:
     def __init__(self, user_coll: pym_coll.Collection):
         self.user_coll = user_coll
 
-    def register_new_user(self, new_user: u.UserRegister):
-        """Registers a new user.
+    def register_new_user(self, new_user: u.UserRegister) -> str:
+        """Register a new user.
 
-        The new user must be a `UserAdd` object with a unique `username`
-        because it is used as the MongoDB `id_`.
+        The new user must be a `u.UserRegister` object with a unique `username` because
+        it is used as the MongoDB `id_`. Otherwise an error is raised, and an error
+        response is returned.
         """
         # Parse new user data.
         username = new_user.username
@@ -56,7 +57,7 @@ class Authenticator:
         return result_id
 
     def get_current_user(self, token: str = fa.Depends(oauth2_scheme)) -> u.UserBase:
-        """Gets the current user from the DB according to the bearer token.
+        """Get the current user from the DB according to the bearer token.
 
         The token contains the `username` under the key "sub", and that is
         used as the MongoDB `id_` in the "user" collection, so the matching
@@ -78,7 +79,7 @@ class Authenticator:
         return user
 
     def authenticate_user(self, username: str, password: str) -> t.Token:
-        """Authenticates a user by checking its username and password.
+        """Authenticate a user by checking its username and password.
 
         If the authentication is successful a bearer token is returned for
         the user. Otherwise a "401 Unauthorized" is returned.
