@@ -10,11 +10,11 @@ from .data.data_laundry_booking import TEST_DATA
 
 
 class ParsedTestData:
-    """Tests for the LaundryBooking class"""
+    """Class to parse and store the test data."""
 
     def __init__(self) -> None:
         """Instantiate the test class by parsing the test data."""
-        self.user_id = TEST_DATA["example"]["user_id"]
+        self.username = TEST_DATA["example"]["username"]
         target_datetime_str = TEST_DATA["example"]["datetime"]
         self.target_datetime = dt.datetime.strptime(
             target_datetime_str, "%Y-%m-%d %H:%M"
@@ -37,11 +37,11 @@ class ParsedTestData:
         booked_by_others: lbt.SlotsTakenDict = {}
         booked_by_user: lbt.SlotsTakenDict = {}
 
-        for test_user_id, test_user_dict in TEST_DATA["users"].items():
+        for test_username, test_user_dict in TEST_DATA["users"].items():
             test_user_bookings = test_user_dict.get("bookings", {})
             for date_str, slot_id in test_user_bookings.items():
                 date = dt.datetime.strptime(date_str, "%Y-%m-%d").date()
-                if test_user_id == self.user_id:
+                if test_username == self.username:
                     self.assign_taken_slot(booked_by_user, date, slot_id)
                 else:
                     self.assign_taken_slot(booked_by_others, date, slot_id)
@@ -62,6 +62,7 @@ class ParsedTestData:
 
 
 def test_laundry_booking_manager():
+    "Test the LaundryBookingManager class."
     parsed_test_data = ParsedTestData()
     laundry_booking_manager = lb.LaundryBookingManager(
         target_datetime=parsed_test_data.target_datetime,

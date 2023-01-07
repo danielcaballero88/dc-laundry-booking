@@ -19,15 +19,15 @@ TEST_DATA: dict = {
         },
     },
     "users": {
-        # <user_id>: <user_obj>
-        0: {
+        # <username[unique]>: <user_obj>
+        "dan": {
             "appartment": 1101,
             "name": "Daniel Caballero",
             "bookings": {
                 "2022-12-07": 1,
             },
         },
-        1: {
+        "cosful123": {
             "appartment": 1101,
             "name": "Cosme Fulanito",
             "bookings": {
@@ -40,7 +40,7 @@ TEST_DATA: dict = {
     },
     "example": {
         "description": "The date is 2022-12-06 at 9:55am, previous slots are unavailable because they are passed, and some bookings are made above. User 'dan' receives the following result when trying to book a slot. Note that the 10am slot is available because 1) there are no bookings from other users 2) dan still has a booking available to make this week (infinite bookings at the moment, need to impement some restrictions later on to avoid one user from booking all slots) and 3) a slot becomes unavailable only after the start time if not booked.",
-        "user_id": 0,
+        "username": "dan",
         "datetime": "2022-12-06 09:55",
         "result": {
             "2022-12-05": {0: 0, 1: 0, 2: 0, 3: 0, 4: 0},
