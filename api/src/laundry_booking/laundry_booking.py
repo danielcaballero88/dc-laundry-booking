@@ -5,6 +5,7 @@ import typing as t
 
 from laundry_booking import lb_enums as lbe
 from laundry_booking import lb_types as lbt
+from laundry_booking.models import user as u
 
 
 class LaundryBookingManager:
