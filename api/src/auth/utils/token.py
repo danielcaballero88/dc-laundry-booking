@@ -1,12 +1,13 @@
 """Token utility module."""
 
 import datetime as dt
-from typing import Optional, TypedDict, cast
+from typing import Optional
 
 import fastapi as fa
 import jose
-import pydantic as pyd
 from jose import jwt
+
+from .. import models as m
 
 SECRET_KEY = "8331c1ea34b83cb53c33687503402982cf86a54e0efccfaf588fa9e3cb545eb2"
 ALGORITHM = "HS256"
@@ -19,44 +20,22 @@ credentials_exception = fa.HTTPException(
 )
 
 
-class Token(pyd.BaseModel):
-    token_type: str
-    token: str
-    expiration: dt.datetime
-
-
-class TokenData(pyd.BaseModel):
-    """Model for the data stored in a token."""
-
-    username: str
-    expiration: dt.datetime
-
-
-class TokenCreateDict(TypedDict):
-    """Typed dict for the data needed to create a token."""
-
-    sub: str
-    exp: dt.datetime
-
-
 def create_access_token(
     username: str, expires_delta: Optional[dt.timedelta] = None
-) -> Token:
+) -> m.Token:
     """Creates a new access token."""
     expire = dt.datetime.utcnow() + (expires_delta or DEFAULT_EXPIRES_DELTA)
 
-    to_encode: TokenCreateDict = {"sub": username, "exp": expire}
+    to_encode = m.TokenCreate(sub=username, exp=expire)
 
-    encoded_jwt: str = jwt.encode(
-        cast(dict, to_encode), SECRET_KEY, algorithm=ALGORITHM
-    )
+    encoded_jwt: str = jwt.encode(to_encode.dict(), SECRET_KEY, algorithm=ALGORITHM)
 
-    token = Token(token_type="bearer", token=encoded_jwt, expiration=expire)
+    token = m.Token(token_type="bearer", token=encoded_jwt, expiration=expire)
 
     return token
 
 
-def decode_token(token: str) -> TokenData:
+def decode_token(token: str) -> m.TokenData:
     """Decodes a bearer token to get the username.
 
     The bearer token is decoded using `jwt.decode` and the username
@@ -85,8 +64,8 @@ def decode_token(token: str) -> TokenData:
         username: str = sub
         expiration = dt.datetime.fromtimestamp(exp)
 
-        token_data = TokenData(username=username, expiration=expiration)
-    except jose.JWTError:
-        raise credentials_exception
+        token_data = m.TokenData(username=username, expiration=expiration)
+    except jose.JWTError as exc:
+        raise credentials_exception from exc
     else:
         return token_data

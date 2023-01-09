@@ -4,8 +4,8 @@ services:
   dc-laundry-booking_api:
     build: ./api
     volumes:
-      - ./api/src:/usr/local/api
-    command: uvicorn main:app --host 0.0.0.0 --reload
+      - ./api:/usr/local/api
+    command: uvicorn src.main:app --host 0.0.0.0 --reload
     environment:
       MONGO_HOST: dc-laundry-booking_mongodb
       MONGO_USER: admin

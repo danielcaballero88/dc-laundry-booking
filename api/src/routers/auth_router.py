@@ -1,46 +1,72 @@
 """Routes for authentication."""
 import fastapi as fa
+import pymongo.results as pym_res
 from fastapi import security as fas
+from src.auth import models as am
+from src.mongodb.models.auth import user as auth_user
 
-import auth
-import mongodb
-from auth.models import user
+from src import auth, mongodb
 
 user_coll = mongodb.mongo_db_conn.get_coll(
     db_name="dc_laundry_booking", coll_name="auth"
 )
 
-authenticator = auth.Authenticator(user_coll=user_coll)
-
-
 router = fa.APIRouter()
 
 
 @router.post("/register")
-async def register(new_user: user.UserRegister):
+async def register(new_user: auth_user.UserRegister):
     """Registers a new user."""
-    new_user_id = authenticator.register_new_user(new_user)
+    # Parse new user to validate username and password and get the hashed password.
+    parsed_new_user = auth.parse_new_user(
+        username=new_user.username, password=new_user.password
+    )
+
+    new_user_db = auth_user.UserDB(
+        username=new_user.username,
+        emial=new_user.email,
+        disabled=False,
+        hashed_password=parsed_new_user.hashed_password,
+    )
+
+    insert_one_result: pym_res.InsertOneResult = new_user_db.add(user_coll=user_coll)
+    new_user_id = str(insert_one_result.inserted_id)
+
     return {"id_": new_user_id}
 
 
 @router.post("/login")
 async def login(form_data: fas.OAuth2PasswordRequestForm = fa.Depends()):
     """Logins a user (using username and password) and returns a token."""
-    token = authenticator.authenticate_user(form_data.username, form_data.password)
+    user_from_db = auth_user.UserDB.get(
+        user_coll=user_coll, username=form_data.username
+    )
+
+    try:
+        token = auth.authenticate_user(
+            username=form_data.username,
+            password=form_data.password,
+            hashed_password=user_from_db.hashed_password,
+        )
+    except ValueError as exc:
+        raise fa.HTTPException(
+            status_code=fa.status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username and/or password.",
+            headers={"WWW-Authenticate": "Bearer"},
+        ) from exc
+
     return token
 
 
 @router.get("/users/me")
-async def get_users_me(
-    user_me: user.UserBase = fa.Depends(authenticator.get_current_user),
-):
-    """Get the user making the request.
+async def get_users_me(token_data: am.TokenData = fa.Depends(auth.decode_token)):
+    """Get the user making the request taken from the bearer token."""
+    user_db = auth_user.UserDB.get(user_coll=user_coll, username=token_data.username)
+    if user_db.disabled:
+        raise fa.HTTPException(
+            status_code=fa.status.HTTP_401_UNAUTHORIZED, detail="Inactive user"
+        )
 
-    GET /users/me gets the data of the user associated with the bearer
-    token passed for authentication in the headers.
-
-    Dependency injection:
-    - user.get_current_active_user(UserBase) -> UserBase
-        - user.get_current_user(token) -> UserBase
-    """
-    return user_me
+    # Filter out sensitive data and return.
+    user = auth_user.UserBase(**user_db.dict())
+    return user

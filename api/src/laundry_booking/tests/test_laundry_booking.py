@@ -3,9 +3,8 @@ import datetime as dt
 
 import pytest  # pylint: disable=unused-import
 
-from laundry_booking import laundry_booking as lb
-from laundry_booking import lb_types as lbt
-
+from .. import laundry_booking as lb
+from .. import models as lbm
 from .data.data_laundry_booking import TEST_DATA
 
 
@@ -24,18 +23,18 @@ class ParsedTestData:
         )
         self.booked_by_others, self.booked_by_user = self.parse_bookings()
 
-    def parse_expected_result(self, raw_expected_resuslt: dict) -> lbt.WeekSlotsDict:
+    def parse_expected_result(self, raw_expected_resuslt: dict) -> lbm.WeekSlotsDict:
         """Parse the expected result to the correct format."""
-        parsed_expected_result: lbt.WeekSlotsDict = {}
+        parsed_expected_result: lbm.WeekSlotsDict = {}
         for date_str, date_slots_dict in raw_expected_resuslt.items():
             date = dt.datetime.strptime(date_str, "%Y-%m-%d").date()
             parsed_expected_result[date] = date_slots_dict
         return parsed_expected_result
 
-    def parse_bookings(self) -> tuple[lbt.SlotsTakenDict, lbt.SlotsTakenDict]:
+    def parse_bookings(self) -> tuple[lbm.SlotsTakenDict, lbm.SlotsTakenDict]:
         """Parse the bookings from the test data into the correct format."""
-        booked_by_others: lbt.SlotsTakenDict = {}
-        booked_by_user: lbt.SlotsTakenDict = {}
+        booked_by_others: lbm.SlotsTakenDict = {}
+        booked_by_user: lbm.SlotsTakenDict = {}
 
         for test_username, test_user_dict in TEST_DATA["users"].items():
             test_user_bookings = test_user_dict.get("bookings", {})
@@ -50,7 +49,7 @@ class ParsedTestData:
 
     @staticmethod
     def assign_taken_slot(
-        taken_slots: lbt.SlotsTakenDict, date: dt.date, slot_id: lbt.SlotIdInt
+        taken_slots: lbm.SlotsTakenDict, date: dt.date, slot_id: lbm.SlotIdInt
     ):
         """Assign a taken slot in a given date to a SlotsTakenDict.
 

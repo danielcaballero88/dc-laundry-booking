@@ -7,110 +7,63 @@ To do this, it implements the username/password flow using OAuth2.
 
 import fastapi as fa
 import fastapi.security as fas
-import pymongo.collection as pym_coll
 
-from .models import user as u
+from . import models as m
 from .utils import password as p
 from .utils import token as t
 
 oauth2_scheme = fas.OAuth2PasswordBearer(tokenUrl="token")
 
 
-class Authenticator:
-    """Authentication main object.
+def parse_new_user(username: str, password: str) -> m.ParsedNewUser:
+    """Parse username and password dict.
 
-    Provides the interface to interact with the Auth capability of
-    the API.
+    Checks validity of username and password (to be implemented) and hashes the
+    password so it can be stored safely. Otherwise an error is raised.
     """
+    # TODO (dancab - 2023-01-08): Validate username and password fields by checking:
+    # - username: length and only valid characters.
+    # - password: length, only valid characters, and secure enough.
 
-    def __init__(self, user_coll: pym_coll.Collection):
-        self.user_coll = user_coll
+    # Parse new user data.
+    hashed_password = p.get_password_hash(password)
 
-    def register_new_user(self, new_user: u.UserRegister) -> str:
-        """Register a new user.
+    # Assemble new user dictionary and convert to pydantic object.
+    parsed_new_user = m.ParsedNewUser(
+        username=username,
+        hashed_password=hashed_password,
+    )
 
-        The new user must be a `u.UserRegister` object with a unique `username` because
-        it is used as the MongoDB `id_`. Otherwise an error is raised, and an error
-        response is returned.
-        """
-        # Parse new user data.
-        username = new_user.username
-        email = new_user.email
-        password = new_user.password
-        disabled = False
-        hashed_password = p.get_password_hash(password)
+    return parsed_new_user
 
-        # Assemble new user dictionary and convert to pydantic object.
-        new_user_dict = {
-            "username": username,
-            "email": email,
-            "disabled": disabled,
-            "hashed_password": hashed_password,
-        }
-        new_user_db = u.UserDB(**new_user_dict)
 
-        # Add to the DB.
-        result = new_user_db.add(user_coll=self.user_coll)
+def decode_token(token: str = fa.Depends(oauth2_scheme)) -> m.TokenData:
+    """Decode the 'Authorization' bearer token.
 
-        # Get the MongoDB id_ and return.
-        result_id = str(result.inserted_id)
-        return result_id
+    The token data consists of a 'username' and 'expiration' datetime.
+    """
+    # Decode token.
+    token_data = t.decode_token(token)
+    return token_data
 
-    def get_current_user(self, token: str = fa.Depends(oauth2_scheme)) -> u.UserBase:
-        """Get the current user from the DB according to the bearer token.
 
-        The token contains the `username` under the key "sub", and that is
-        used as the MongoDB `id_` in the "user" collection, so the matching
-        user object is fetched.
-        """
-        # Decode token.
-        token_data = t.decode_token(token)
+def authenticate_user(username: str, password: str, hashed_password: str) -> m.Token:
+    """Authenticate a user and return Authorization bearer token.
 
-        # Get user.
-        user_db = u.UserDB.get(user_coll=self.user_coll, username=token_data.username)
+    Args:
+        username (str): The username of the user.
+        password (str): The password given for authentication.
+        hashed_password (str): The hash of the password (should come from the DB).
 
-        if user_db.disabled:
-            raise fa.HTTPException(
-                status_code=fa.status.HTTP_401_UNAUTHORIZED, detail="Inactive user"
-            )
+    Returns:
+        The Authorization bearer token.
 
-        # Filter out sensitive data and return.
-        user = u.UserBase(**user_db.dict())
-        return user
+    Raises:
+        ValueError if the password doens't match the hash.
+    """
+    if not p.verify_password(password, hashed_password):
+        raise ValueError("Invalid password.")
 
-    def authenticate_user(self, username: str, password: str) -> t.Token:
-        """Authenticate a user by checking its username and password.
+    token = t.create_access_token(username)
 
-        If the authentication is successful a bearer token is returned for
-        the user. Otherwise a "401 Unauthorized" is returned.
-
-        Args:
-            username (str): The user to authenticate.
-            password (str): The password given for authentication.
-
-        Returns:
-            token (Token): Token object.
-
-        Raises:
-            HTTPException "401 Unauthorized": If the provided credentials
-                are not correct.
-        """
-        # Get the user data from the DB.
-        user_db = u.UserDB.get(user_coll=self.user_coll, username=username)
-
-        # Check if the password is correct.
-        if not p.verify_password(password, user_db.hashed_password):
-            raise fa.HTTPException(
-                status_code=fa.status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect username and/or password.",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-
-        # Parse into pydantic object for validation.
-        user = u.UserBase(**user_db.dict())
-
-        # Create new access token for the user.
-        token = t.create_access_token(user.username)
-
-        # Done.
-        return token
+    return token

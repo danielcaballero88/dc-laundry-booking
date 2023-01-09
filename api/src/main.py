@@ -1,8 +1,7 @@
 """Main module for the API."""
 import fastapi as fa
-
-import mongodb
-from routers import auth_router, laundry_booking_router
+from src.mongodb import mongodb
+from src.routers import auth_router, laundry_booking_router
 
 app = fa.FastAPI()
 

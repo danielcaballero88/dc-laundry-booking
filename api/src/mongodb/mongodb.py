@@ -1,4 +1,4 @@
-"""Module for interaction with MongoDB."""
+"""Module for interacting with MongoDB."""
 import os
 
 import pymongo as pym
