@@ -20,8 +20,8 @@ WORKDIR /usr/local/api
 # done if needed, but at the moment copying everything is better.
 COPY . /usr/local/api
 
-# Install pip requirements
-RUN python -m pip install -r requirements.txt
+# Install pip requirements (dev for development environment).
+RUN python -m pip install -r requirements-dev.txt
 
 
 # Creates a non-root user with an explicit UID and adds permission to access the
