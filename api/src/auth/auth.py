@@ -4,15 +4,9 @@ This subpackage is meant to provide all the authentication functionality
 for the API (user registration and login).
 To do this, it implements the username/password flow using OAuth2.
 """
-
-import fastapi as fa
-import fastapi.security as fas
-
 from . import models as m
 from .utils import password as p
 from .utils import token as t
-
-oauth2_scheme = fas.OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
 def parse_new_user(username: str, password: str) -> m.ParsedNewUser:
@@ -37,7 +31,7 @@ def parse_new_user(username: str, password: str) -> m.ParsedNewUser:
     return parsed_new_user
 
 
-def decode_token(token: str = fa.Depends(oauth2_scheme)) -> m.TokenData:
+def decode_token(token: str) -> m.TokenData:
     """Decode the 'Authorization' bearer token.
 
     The token data consists of a 'username' and 'expiration' datetime.

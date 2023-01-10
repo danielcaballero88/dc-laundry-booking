@@ -2,7 +2,6 @@
 import fastapi as fa
 import pymongo.results as pym_res
 from fastapi import security as fas
-from src.auth import models as am
 from src.mongodb.models.auth import user as auth_user
 
 from src import auth, mongodb
@@ -11,7 +10,12 @@ user_coll = mongodb.mongo_db_conn.get_coll(
     db_name="dc_laundry_booking", coll_name="auth"
 )
 
-router = fa.APIRouter()
+router = fa.APIRouter(
+    prefix="/auth",
+    tags=["auth"],
+)
+
+oauth2_scheme = fas.OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
 @router.post("/register")
@@ -59,8 +63,9 @@ async def login(form_data: fas.OAuth2PasswordRequestForm = fa.Depends()):
 
 
 @router.get("/users/me")
-async def get_users_me(token_data: am.TokenData = fa.Depends(auth.decode_token)):
+async def get_users_me(token: str = fa.Depends(oauth2_scheme)):
     """Get the user making the request taken from the bearer token."""
+    token_data = auth.decode_token(token)
     user_db = auth_user.UserDB.get(user_coll=user_coll, username=token_data.username)
     if user_db.disabled:
         raise fa.HTTPException(

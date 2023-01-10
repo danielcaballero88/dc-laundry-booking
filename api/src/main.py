@@ -24,14 +24,6 @@ async def hello_world():
     return {"Hello": "World"}
 
 
-app.include_router(
-    auth_router.router,
-    prefix="/auth",
-    tags=["auth"],
-)
+app.include_router(auth_router.router)
 
-app.include_router(
-    laundry_booking_router.router,
-    prefix="/booking",
-    tags=["booking"],
-)
+app.include_router(laundry_booking_router.router)

@@ -14,7 +14,10 @@ lb_user_coll = mongodb.mongo_db_conn.get_coll(
     db_name="dc_laundry_booking", coll_name="users"
 )
 
-router = fa.APIRouter()
+router = fa.APIRouter(
+    prefix="/booking",
+    tags=["booking"],
+)
 
 
 @router.post("/add_user")
