@@ -24,7 +24,7 @@ async def register(new_user: auth_user.UserRegister):
 
     new_user_db = auth_user.UserDB(
         username=new_user.username,
-        emial=new_user.email,
+        email=new_user.email,
         disabled=False,
         hashed_password=parsed_new_user.hashed_password,
     )
