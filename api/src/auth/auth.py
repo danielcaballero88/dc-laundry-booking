@@ -12,7 +12,7 @@ from . import models as m
 from .utils import password as p
 from .utils import token as t
 
-oauth2_scheme = fas.OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = fas.OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
 def parse_new_user(username: str, password: str) -> m.ParsedNewUser:

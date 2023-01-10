@@ -30,7 +30,7 @@ def create_access_token(
 
     encoded_jwt: str = jwt.encode(to_encode.dict(), SECRET_KEY, algorithm=ALGORITHM)
 
-    token = m.Token(token_type="bearer", token=encoded_jwt, expiration=expire)
+    token = m.Token(token_type="Bearer", access_token=encoded_jwt, expiration=expire)
 
     return token
 

@@ -15,7 +15,7 @@ class Token(pyd.BaseModel):
     """Data model for the Token."""
 
     token_type: str
-    token: str
+    access_token: str
     expiration: dt.datetime
 
 
