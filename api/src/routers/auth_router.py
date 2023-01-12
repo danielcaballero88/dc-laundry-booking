@@ -2,9 +2,9 @@
 import fastapi as fa
 import pymongo.results as pym_res
 from fastapi import security as fas
-from src.mongodb.models.auth import user as auth_user
 
 from src import auth, mongodb
+from src.mongodb.models.auth import user as auth_user
 
 user_coll = mongodb.mongo_db_conn.get_coll(
     db_name="dc_laundry_booking", coll_name="auth"

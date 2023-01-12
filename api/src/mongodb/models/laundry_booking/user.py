@@ -7,12 +7,15 @@ and collection can be used.
 
 from __future__ import annotations
 
-from typing import Optional
+import typing as t
 
 import fastapi as fa
 import pydantic as pyd
 import pymongo.collection as pym_coll
 import pymongo.results as pym_res
+
+from src.laundry_booking import models as lb_m
+from src.laundry_booking.utils import date_parsing as lb_dp
 
 
 class UserAdd(pyd.BaseModel):
@@ -20,6 +23,7 @@ class UserAdd(pyd.BaseModel):
 
     appartment: int
     name: str
+    bookings: dict[str, int]
 
     def upsert(
         self, user_coll: pym_coll.Collection, username: str
@@ -29,11 +33,16 @@ class UserAdd(pyd.BaseModel):
         result = user_coll.replace_one({"_id": obj["_id"]}, obj, upsert=True)
         return result
 
+    @pyd.root_validator(pre=True)
+    def add_default_bookings_empty(cls, values: dict) -> dict:
+        """Adds an empty dict as default value for bookings."""
+        if "bookings" not in values:
+            values["bookings"] = {}
+        return values
+
 
 class User(UserAdd):
     """Model to interact with a user of the Laundry Booking DB."""
-
-    bookings: dict[str, int]
 
     def upsert(self, *args, **kwargs):
         """Override parent class 'upsert' method to make it invalid for this class."""
@@ -44,7 +53,7 @@ class User(UserAdd):
     @classmethod
     def get(cls, user_coll: pym_coll.Collection, username: str) -> User:
         """Fetch a user from the DB."""
-        user_dict: Optional[dict] = user_coll.find_one({"_id": username})
+        user_dict: t.Optional[dict] = user_coll.find_one({"_id": username})
         if not user_dict:
             raise fa.HTTPException(
                 status_code=fa.status.HTTP_404_NOT_FOUND,
@@ -52,3 +61,45 @@ class User(UserAdd):
             )
         user_db = cls(**user_dict)
         return user_db
+
+    def add_booking(
+        self,
+        user_coll: pym_coll.Collection,
+        username: str,
+        date_str: str,
+        slot_id: lb_m.SlotIdInt,
+    ) -> pym_res.UpdateResult:
+        """Add a booking to a user in the DB."""
+        update_one_result = user_coll.update_one(
+            {
+                "_id": username,
+                f"bookings.{date_str}": {"$exists": False},
+            },
+            {"$set": {f"bookings.{date_str}": slot_id}},
+        )
+        return update_one_result
+
+    def get_bookings(self) -> lb_m.SlotsTakenDict:
+        """Get the bookings made by the user."""
+        bookings_by_user: lb_m.SlotsTakenDict = {}
+        for date_str, slot_id in self.bookings.items():
+            date = lb_dp.parse_date_from_string(date_str)
+            bookings_by_user[date] = [slot_id]
+        return bookings_by_user
+
+    def get_bookings_by_others(
+        self,
+        user_coll: pym_coll.Collection,
+        username: str,
+    ) -> lb_m.SlotsTakenDict:
+        """Get the bookings of other users."""
+        docs = user_coll.find({"_id": {"$ne": username}}, {"bookings": 1, "_id": 0})
+        bookings_by_others: lb_m.SlotsTakenDict = {}
+        for doc in docs:
+            for date_str, slot_id in doc["bookings"].items():
+                date = lb_dp.parse_date_from_string(date_str)
+                if date not in bookings_by_others:
+                    bookings_by_others[date] = []
+                bookings_by_others[date].append(slot_id)
+
+        return bookings_by_others

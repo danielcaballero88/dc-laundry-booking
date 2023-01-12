@@ -7,8 +7,6 @@ used.
 
 from __future__ import annotations
 
-from typing import Optional
-
 import fastapi as fa
 import pydantic as pyd
 import pymongo.collection as pym_coll
@@ -38,7 +36,7 @@ class UserDB(UserBase):
     @classmethod
     def get(cls, user_coll: pym_coll.Collection, username: str) -> UserDB:
         """Fetch a user from the DB."""
-        user_dict: Optional[dict] = user_coll.find_one({"_id": username})
+        user_dict = user_coll.find_one({"_id": username})
         if not user_dict:
             raise fa.HTTPException(
                 status_code=fa.status.HTTP_404_NOT_FOUND,

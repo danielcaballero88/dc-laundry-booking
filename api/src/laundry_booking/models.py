@@ -4,6 +4,7 @@ import enum as e
 import typing as t
 
 SlotIdInt = t.Literal[0, 1, 2, 3, 4]
+SlotIdStr = t.Literal["0", "1", "2", "3", "4"]
 SlotStatusIdInt = t.Literal[0, 1, 2, 3]
 
 HourInt = t.Literal[

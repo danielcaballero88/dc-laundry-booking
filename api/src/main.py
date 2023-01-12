@@ -1,5 +1,6 @@
 """Main module for the API."""
 import fastapi as fa
+
 from src.mongodb import mongodb
 from src.routers import auth_router, laundry_booking_router
 

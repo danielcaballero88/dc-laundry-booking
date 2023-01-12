@@ -5,6 +5,7 @@ import pytest  # pylint: disable=unused-import
 
 from .. import laundry_booking as lb
 from .. import models as lbm
+from ..utils import date_parsing as dp
 from .data.data_laundry_booking import TEST_DATA
 
 
@@ -15,9 +16,7 @@ class ParsedTestData:
         """Instantiate the test class by parsing the test data."""
         self.username = TEST_DATA["example"]["username"]
         target_datetime_str = TEST_DATA["example"]["datetime"]
-        self.target_datetime = dt.datetime.strptime(
-            target_datetime_str, "%Y-%m-%d %H:%M"
-        )
+        self.target_datetime = dp.parse_datetime_from_string(target_datetime_str)
         self.expected_result = self.parse_expected_result(
             TEST_DATA["example"]["result"]
         )
@@ -27,7 +26,7 @@ class ParsedTestData:
         """Parse the expected result to the correct format."""
         parsed_expected_result: lbm.WeekSlotsDict = {}
         for date_str, date_slots_dict in raw_expected_resuslt.items():
-            date = dt.datetime.strptime(date_str, "%Y-%m-%d").date()
+            date = dp.parse_date_from_string(date_str)
             parsed_expected_result[date] = date_slots_dict
         return parsed_expected_result
 
@@ -39,7 +38,7 @@ class ParsedTestData:
         for test_username, test_user_dict in TEST_DATA["users"].items():
             test_user_bookings = test_user_dict.get("bookings", {})
             for date_str, slot_id in test_user_bookings.items():
-                date = dt.datetime.strptime(date_str, "%Y-%m-%d").date()
+                date = dp.parse_date_from_string(date_str)
                 if test_username == self.username:
                     self.assign_taken_slot(booked_by_user, date, slot_id)
                 else:
