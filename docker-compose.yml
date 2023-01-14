@@ -31,6 +31,18 @@ services:
     networks:
       - dc-laundry-booking_network
 
+  dc-laundry-booking_front:
+    build: ./front
+    volumes:
+      - ./front:/usr/local/front
+    command: ng serve --host 0.0.0.0
+    ports:
+      - "4200:4200"
+    networks:
+      - dc-laundry-booking_network
+    depends_on:
+      - dc-laundry-booking_api
+
 volumes:
   dc-laundry-booking_volume_mongodb:
 networks:
