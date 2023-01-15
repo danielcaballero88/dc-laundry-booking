@@ -1,1 +1,20 @@
-<p>home works!</p>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Times</th>
+      <th *ngFor="let cellItem of tableData | keyvalue" scope="col">
+        {{ cellItem.key }}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Loop thorugh slots (one row per slot). -->
+    <tr *ngFor="let slotItem of slotsData | keyvalue">
+      <!-- Loop through dates (one column per date). -->
+      <th scope="row">{{ slotItem.value.startHour }} - {{ slotItem.value.endHour }}</th>
+      <td *ngFor="let cellItem of tableData | keyvalue">
+        {{ getCellData(cellItem.key, slotItem.key) }}
+      </td>
+    </tr>
+  </tbody>
+</table>
