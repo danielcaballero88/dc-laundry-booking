@@ -1,11 +1,20 @@
 <!-- Button trigger modal -->
 <button
+  *ngIf="!isLoggedIn"
   type="button"
   class="btn btn-primary"
   data-bs-toggle="modal"
   data-bs-target="#exampleModal"
 >
   Login
+</button>
+<button
+  *ngIf="isLoggedIn"
+  type="button"
+  class="btn btn-primary"
+  (click)="logout()"
+>
+  Logout
 </button>
 
 <!-- Modal -->
@@ -28,7 +37,7 @@
         ></button>
       </div>
       <!-- Login Form -->
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <form [formGroup]="loginForm" (ngSubmit)="login()">
         <div class="modal-body">
           <div class="mb-3 row">
             <label for="inputUsername" class="col-sm-2 col-form-label"
@@ -67,6 +76,7 @@
         </div>
         <div class="modal-footer">
           <button
+            #closeModal
             type="button"
             class="btn btn-secondary"
             data-bs-dismiss="modal"
