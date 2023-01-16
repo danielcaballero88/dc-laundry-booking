@@ -1,11 +1,25 @@
 """Main module for the API."""
 import fastapi as fa
+from fastapi.middleware import cors as fa_cors
+
 
 from src.mongodb import mongodb
 from src.routers import auth_router, laundry_booking_router
 
 app = fa.FastAPI()
 
+origins = [
+    "http://localhost:4200",
+]
+
+app.add_middleware(
+    fa_cors.CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["POST", "GET"],
+		allow_headers=["*"],
+    max_age=3600,
+)
 
 @app.on_event("startup")
 async def startup():
