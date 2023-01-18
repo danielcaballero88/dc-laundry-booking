@@ -11,6 +11,7 @@ import { environment } from 'src/environments/environment';
 })
 export class LoginService implements OnInit {
   LoginSubject = new Subject<{user: User, token: Token}>();
+  LoginErrorSubject = new Subject<any>();
   LogoutSubject = new Subject<void>();
   token: Token | null = null;
   user: User | null = null;
@@ -61,10 +62,7 @@ export class LoginService implements OnInit {
           this.LoginSubject.next({user: this.user, token: this.token});
         },
         error: (err) => {
-          this.LoginSubject.error(err);
-        },
-        complete: () => {
-          this.LoginSubject.complete();
+          this.LoginErrorSubject.next(err);
         },
       });
   }

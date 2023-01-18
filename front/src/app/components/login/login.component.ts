@@ -31,13 +31,20 @@ export class LoginComponent implements OnInit {
     this.loginService.LoginSubject.subscribe({
       next: (data) => {
         // Close the dialog, the user is now logged in.
+        console.log("Success logging in: ", data);
         this.isLoggedIn = true;
         this.closeModalRef.nativeElement.click();
       },
       error: (err) => {
-        console.error('Error loging in: ', err);
+        console.error('Error logging in: ', err);
       }
     });
+
+    this.loginService.LoginErrorSubject.subscribe({
+      next: () => {
+        console.log("Logging failed.");
+      }
+    })
 
     this.loginService.LogoutSubject.subscribe({
       next: () => {
