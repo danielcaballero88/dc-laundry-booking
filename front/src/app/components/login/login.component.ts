@@ -21,10 +21,29 @@ export class LoginComponent implements OnInit {
   isLoggedIn: boolean = false;
 
 
-  constructor(public loginService: LoginService, private tokenStorageService: TokenStorageService) { }
+  constructor(private loginService: LoginService, private tokenStorageService: TokenStorageService) { }
 
   ngOnInit(): void {
+    // Get initial logged in status.
     this.isLoggedIn = this.loginService.checkStatus();
+
+    // Listen for loggin and logout events.
+    this.loginService.LoginSubject.subscribe({
+      next: (data) => {
+        // Close the dialog, the user is now logged in.
+        this.isLoggedIn = true;
+        this.closeModalRef.nativeElement.click();
+      },
+      error: (err) => {
+        console.error('Error loging in: ', err);
+      }
+    });
+
+    this.loginService.LogoutSubject.subscribe({
+      next: () => {
+        this.isLoggedIn = false;
+      }
+    })
   }
 
   login() {
@@ -35,26 +54,9 @@ export class LoginComponent implements OnInit {
       ? this.loginForm.value.password
       : '';
     this.loginService.login(username, password);
-    this.loginService.LoginSubject.subscribe({
-      next: (data) => {
-        // Close the dialog, the user is now logged in.
-        console.log(data);
-        console.log(this.closeModalRef);
-        this.isLoggedIn = true;
-        this.closeModalRef.nativeElement.click();
-      },
-      error: (err) => {
-        console.error('Error loging in: ', err);
-      },
-      complete: () => {
-        const savedToken = this.tokenStorageService.getToken();
-        console.log("Login complete, savedToken: ", savedToken);
-      }
-    });
   }
 
   logout() {
     this.loginService.logout();
-    this.isLoggedIn = false;
   }
 }

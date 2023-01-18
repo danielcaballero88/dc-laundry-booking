@@ -7,3 +7,7 @@ export interface Token {
 export interface User {
   username: string;
 }
+
+export interface WeekDatesSlots {
+  [key: string]: { [key: number]: number };
+}
