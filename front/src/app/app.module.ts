@@ -9,9 +9,10 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 import { AuthInterceptor } from 'src/app/common/auth.interceptor';
+import { BookingTableComponent } from './components/booking-table/booking-table.component';
 
 @NgModule({
-  declarations: [AppComponent, NavbarComponent, HomeComponent, LoginComponent],
+  declarations: [AppComponent, NavbarComponent, HomeComponent, LoginComponent, BookingTableComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
