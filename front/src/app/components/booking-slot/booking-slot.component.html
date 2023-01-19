@@ -4,7 +4,13 @@
     <button *ngSwitchCase="0" type="button" class="btn btn-secondary" disabled>
       Unavailable
     </button>
-    <button *ngSwitchCase="1" type="button" class="btn btn-primary">
+    <button
+      *ngSwitchCase="1"
+      type="button"
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#modalBookAvailableSlot"
+    >
       Available
     </button>
     <button *ngSwitchCase="2" type="button" class="btn btn-warning">
@@ -17,4 +23,36 @@
       Error
     </button>
   </ng-container>
+</div>
+
+<!-- Modal: Book available slot. -->
+<div
+  class="modal fade"
+  id="modalBookAvailableSlot"
+  tabindex="-1"
+  aria-labelledby="modalBookAvailableSlotLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalBookAvailableSlotLabel">
+          Book this slot?
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <!-- Content -->
+      <p>
+        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Atque eveniet
+        doloribus autem repellendus, assumenda ullam unde animi officia amet
+        recusandae quo quia nisi voluptates, ab fugit totam reiciendis in dolor.
+      </p>
+      <!--  -->
+    </div>
+  </div>
 </div>
