@@ -12,4 +12,8 @@ export class BookingSlotComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {}
+
+  temp(val: any): string {
+    return typeof val;
+  }
 }

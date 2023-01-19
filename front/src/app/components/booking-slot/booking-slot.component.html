@@ -1,1 +1,20 @@
-<span>{{ status }}</span>
+<div class="container">
+  status = {{ status }}
+  <ng-container [ngSwitch]="status">
+    <button *ngSwitchCase="0" type="button" class="btn btn-secondary" disabled>
+      Unavailable
+    </button>
+    <button *ngSwitchCase="1" type="button" class="btn btn-primary">
+      Available
+    </button>
+    <button *ngSwitchCase="2" type="button" class="btn btn-warning">
+      Booked by other
+    </button>
+    <button *ngSwitchCase="3" type="button" class="btn btn-success">
+      Booked by user
+    </button>
+    <button *ngSwitchDefault type="button" class="btn btn-secondary" disabled>
+      Error
+    </button>
+  </ng-container>
+</div>
