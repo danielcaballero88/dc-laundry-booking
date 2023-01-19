@@ -13,7 +13,14 @@ import { BookingTableComponent } from './components/booking-table/booking-table.
 import { BookingSlotComponent } from './components/booking-slot/booking-slot.component';
 
 @NgModule({
-  declarations: [AppComponent, NavbarComponent, HomeComponent, LoginComponent, BookingTableComponent, BookingSlotComponent],
+  declarations: [
+    AppComponent,
+    NavbarComponent,
+    HomeComponent,
+    LoginComponent,
+    BookingTableComponent,
+    BookingSlotComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,

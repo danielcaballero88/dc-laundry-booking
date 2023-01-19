@@ -3,15 +3,13 @@ import { Component, Input, OnInit } from '@angular/core';
 @Component({
   selector: 'app-booking-slot',
   templateUrl: './booking-slot.component.html',
-  styleUrls: ['./booking-slot.component.scss']
+  styleUrls: ['./booking-slot.component.scss'],
 })
 export class BookingSlotComponent implements OnInit {
   @Input()
   status: number = 0;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

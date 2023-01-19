@@ -10,7 +10,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class LoginService implements OnInit {
-  LoginSubject = new Subject<{user: User, token: Token}>();
+  LoginSubject = new Subject<{ user: User; token: Token }>();
   LoginErrorSubject = new Subject<any>();
   LogoutSubject = new Subject<void>();
   token: Token | null = null;
@@ -18,8 +18,8 @@ export class LoginService implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private tokenStorageService: TokenStorageService
-  ) { }
+    private tokenStorageService: TokenStorageService,
+  ) {}
 
   ngOnInit(): void {
     this.token = this.tokenStorageService.getToken();
@@ -52,14 +52,14 @@ export class LoginService implements OnInit {
       .subscribe({
         next: (tokenObj: Token) => {
           // Create user object and store it.
-          const userObj = {username};
+          const userObj = { username };
           this.tokenStorageService.saveUser(userObj);
           this.user = userObj;
           // Also store the token object.
           this.token = tokenObj;
           this.tokenStorageService.saveToken(tokenObj);
           // And push the references to the login subject.
-          this.LoginSubject.next({user: this.user, token: this.token});
+          this.LoginSubject.next({ user: this.user, token: this.token });
         },
         error: (err) => {
           this.LoginErrorSubject.next(err);
@@ -68,7 +68,7 @@ export class LoginService implements OnInit {
   }
 
   logout() {
-    console.log("Logging out, clearing storage.");
+    console.log('Logging out, clearing storage.');
     this.tokenStorageService.clearStorage();
     this.token = null;
     this.user = null;

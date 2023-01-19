@@ -11,7 +11,9 @@
     <!-- Loop thorugh slots (one row per slot). -->
     <tr *ngFor="let slotItem of slotsData | keyvalue">
       <!-- Loop through dates (one column per date). -->
-      <th scope="row">{{ slotItem.value.startHour }} - {{ slotItem.value.endHour }}</th>
+      <th scope="row">
+        {{ slotItem.value.startHour }} - {{ slotItem.value.endHour }}
+      </th>
       <td *ngFor="let cellItem of tableData | keyvalue">
         <div class="cell-content">
           <app-booking-slot

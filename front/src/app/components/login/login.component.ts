@@ -3,7 +3,6 @@ import { FormGroup, FormControl } from '@angular/forms';
 import { LoginService } from 'src/app/services/login.service';
 import { TokenStorageService } from 'src/app/services/token-storage.service';
 
-
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -20,8 +19,10 @@ export class LoginComponent implements OnInit {
 
   isLoggedIn: boolean = false;
 
-
-  constructor(private loginService: LoginService, private tokenStorageService: TokenStorageService) { }
+  constructor(
+    private loginService: LoginService,
+    private tokenStorageService: TokenStorageService,
+  ) {}
 
   ngOnInit(): void {
     // Get initial logged in status.
@@ -31,26 +32,26 @@ export class LoginComponent implements OnInit {
     this.loginService.LoginSubject.subscribe({
       next: (data) => {
         // Close the dialog, the user is now logged in.
-        console.log("Success logging in: ", data);
+        console.log('Success logging in: ', data);
         this.isLoggedIn = true;
         this.closeModalRef.nativeElement.click();
       },
       error: (err) => {
         console.error('Error logging in: ', err);
-      }
+      },
     });
 
     this.loginService.LoginErrorSubject.subscribe({
       next: () => {
-        console.log("Logging failed.");
-      }
-    })
+        console.log('Logging failed.');
+      },
+    });
 
     this.loginService.LogoutSubject.subscribe({
       next: () => {
         this.isLoggedIn = false;
-      }
-    })
+      },
+    });
   }
 
   login() {

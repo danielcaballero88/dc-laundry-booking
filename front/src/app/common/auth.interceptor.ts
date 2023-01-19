@@ -15,7 +15,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(
     request: HttpRequest<unknown>,
-    next: HttpHandler
+    next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
     // add auth header with jwt if account is logged in and request is to the api url
     const isApiUrl = request.url.startsWith(environment.apiUrl);
@@ -36,7 +36,7 @@ export class AuthInterceptor implements HttpInterceptor {
         const error = err.error?.message || err.statusText;
         console.error(err);
         return throwError(() => new Error(error));
-      })
+      }),
     );
   }
 }

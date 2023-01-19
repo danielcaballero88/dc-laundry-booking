@@ -5,10 +5,10 @@ const TOKEN_KEY = 'auth-token';
 const USER_KEY = 'auth-user';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TokenStorageService {
-  constructor() { }
+  constructor() {}
 
   clearStorage(): void {
     window.sessionStorage.clear();
