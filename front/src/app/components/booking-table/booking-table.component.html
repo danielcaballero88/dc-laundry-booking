@@ -14,7 +14,9 @@
       <th scope="row">{{ slotItem.value.startHour }} - {{ slotItem.value.endHour }}</th>
       <td *ngFor="let cellItem of tableData | keyvalue">
         <div class="cell-content">
-          <span>{{ getCellData(cellItem.key, slotItem.key) }}</span>
+          <app-booking-slot
+            [status]="getCellData(cellItem.key, slotItem.key)"
+          ></app-booking-slot>
         </div>
       </td>
     </tr>
