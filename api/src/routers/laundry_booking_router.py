@@ -3,6 +3,7 @@ import datetime as dt
 import typing as t
 
 import fastapi as fa
+import pydantic as pyd
 
 from src import auth
 from src import laundry_booking as lb
@@ -72,16 +73,22 @@ async def get_week(
     return lb_manager.week_slots
 
 
+class BookSlotReqBody(pyd.BaseModel):
+    """Model for the body of a book_slot request."""
+
+    date_str: str
+    slot_id: lb_m.SlotIdInt
+
+
 @router.post("/book_slot")
 async def book_slot(
-    date_str: str,
-    slot_id: lb_m.SlotIdInt = fa.Depends(_parse_slot_id_from_string),
+    req_body: BookSlotReqBody,
     token: str = fa.Depends(auth_router.oauth2_scheme),
 ):
     """Book a slot given a date and slot_id."""
     # Check that the date format is correct.
     try:
-        date = lb_dp.parse_date_from_string(date_str)
+        date = lb_dp.parse_date_from_string(req_body.date_str)
     except Exception as exc:
         raise fa.HTTPException(
             status_code=fa.status.HTTP_400_BAD_REQUEST,
@@ -99,7 +106,7 @@ async def book_slot(
     # booking for that very same date.
     bookings_by_user = user_db.get_bookings()
     if date in bookings_by_user:
-        if slot_id in bookings_by_user[date]:
+        if req_body.slot_id in bookings_by_user[date]:
             raise fa.HTTPException(
                 status_code=fa.status.HTTP_409_CONFLICT,
                 detail="User has already booked the selected slot.",
@@ -114,7 +121,7 @@ async def book_slot(
     bookings_by_others = user_db.get_bookings_by_others(
         user_coll=lb_user_coll, username=token_data.username
     )
-    if date in bookings_by_others and slot_id in bookings_by_others[date]:
+    if date in bookings_by_others and req_body.slot_id in bookings_by_others[date]:
         raise fa.HTTPException(
             status_code=fa.status.HTTP_409_CONFLICT,
             detail="The selected slot is already booked by someone else.",
@@ -124,14 +131,14 @@ async def book_slot(
     result = user_db.add_booking(
         user_coll=lb_user_coll,
         username=token_data.username,
-        date_str=date_str,
-        slot_id=slot_id,
+        date_str=req_body.date_str,
+        slot_id=req_body.slot_id,
     )
 
     return {
         "username": token_data.username,
         "full name": user_db.name,
         "date": date,
-        "slot_id": int(slot_id),
+        "slot_id": int(req_body.slot_id),
         "matched_count": str(result.matched_count),
     }
