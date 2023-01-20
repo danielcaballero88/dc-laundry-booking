@@ -1,4 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { SlotObj } from 'src/app/models/shared';
+import { LaundryBookingService } from 'src/app/services/laundry-booking.service';
 
 @Component({
   selector: 'app-booking-slot',
@@ -7,13 +9,23 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class BookingSlotComponent implements OnInit {
   @Input()
-  status: number = 0;
+  slotObj!: SlotObj;
 
-  constructor() {}
+  constructor(private laundryBookingService: LaundryBookingService) {}
 
   ngOnInit(): void {}
 
-  temp(val: any): string {
-    return typeof val;
+  bookSlot() {
+    this.laundryBookingService
+      .bookSlot(this.slotObj.date, this.slotObj.id)
+      .subscribe({
+        next: (data) => {
+          console.log('Success: ', data);
+          this.slotObj.status = 3;
+        },
+        error: (err) => {
+          console.error('Error: ', err);
+        },
+      });
   }
 }

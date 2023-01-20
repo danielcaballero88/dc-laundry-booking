@@ -1,6 +1,6 @@
 <div class="container">
-  status = {{ status }}
-  <ng-container [ngSwitch]="status">
+  status = {{ slotObj.status }}
+  <ng-container [ngSwitch]="slotObj.status">
     <button *ngSwitchCase="0" type="button" class="btn btn-secondary" disabled>
       Unavailable
     </button>
@@ -9,7 +9,9 @@
       type="button"
       class="btn btn-primary"
       data-bs-toggle="modal"
-      data-bs-target="#modalBookAvailableSlot"
+      [attr.data-bs-target]="
+        '#modalBookAvailableSlot' + slotObj.date + slotObj.id
+      "
     >
       Available
     </button>
@@ -28,7 +30,7 @@
 <!-- Modal: Book available slot. -->
 <div
   class="modal fade"
-  id="modalBookAvailableSlot"
+  [id]="'modalBookAvailableSlot' + slotObj.date + slotObj.id"
   tabindex="-1"
   aria-labelledby="modalBookAvailableSlotLabel"
   aria-hidden="true"
@@ -37,7 +39,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modalBookAvailableSlotLabel">
-          Book this slot?
+          Book this slot? {{ slotObj.date }}: {{ slotObj.id }}
         </h5>
         <button
           type="button"
@@ -47,11 +49,17 @@
         ></button>
       </div>
       <!-- Content -->
-      <p>
-        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Atque eveniet
-        doloribus autem repellendus, assumenda ullam unde animi officia amet
-        recusandae quo quia nisi voluptates, ab fugit totam reiciendis in dolor.
-      </p>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        data-bs-dismiss="modal"
+        (click)="bookSlot()"
+      >
+        Yes
+      </button>
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        Close
+      </button>
       <!--  -->
     </div>
   </div>

@@ -17,7 +17,7 @@
       <td *ngFor="let cellItem of tableData | keyvalue">
         <div class="cell-content">
           <app-booking-slot
-            [status]="getCellData(cellItem.key, slotItem.key)"
+            [slotObj]="getCellData(cellItem.key, slotItem.key)"
           ></app-booking-slot>
         </div>
       </td>
