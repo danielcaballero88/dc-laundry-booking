@@ -15,7 +15,7 @@ import pymongo.collection as pym_coll
 import pymongo.results as pym_res
 
 from src.laundry_booking import models as lb_m
-from src.laundry_booking.utils import date_parsing as lb_dp
+from src.laundry_booking.utils import datetime_utils as lb_dp
 
 
 class UserAdd(pyd.BaseModel):
@@ -23,7 +23,7 @@ class UserAdd(pyd.BaseModel):
 
     appartment: int
     name: str
-    bookings: dict[str, int]
+    bookings: dict[str, lb_m.SlotIdInt]
 
     def upsert(
         self, user_coll: pym_coll.Collection, username: str
@@ -78,6 +78,25 @@ class User(UserAdd):
             {"$set": {f"bookings.{date_str}": slot_id}},
         )
         return update_one_result
+
+    def delete_booking(
+        self,
+        user_coll: pym_coll.Collection,
+        username: str,
+        date_str: str,
+        slot_id: lb_m.SlotIdInt,
+    ) -> pym_res.UpdateResult:
+        """Delete a booking of the user in the DB."""
+        result = user_coll.update_one(
+            {
+                "_id": username,
+                f"bookings.{date_str}": {"$exists": True},
+            },
+            {
+                "$unset": {f"bookings.{date_str}": ""},
+            },
+        )
+        return result
 
     def get_bookings(self) -> lb_m.SlotsTakenDict:
         """Get the bookings made by the user."""

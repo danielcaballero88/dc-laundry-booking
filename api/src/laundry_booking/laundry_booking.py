@@ -4,6 +4,7 @@ import datetime as dt
 import typing as t
 
 from . import models as m
+from .utils import datetime_utils as dt_u
 
 
 class LaundryBookingManager:
@@ -27,23 +28,8 @@ class LaundryBookingManager:
         self.slots_unavailable = slots_unavailable
         self.slots_booked_by_others = slots_booked_by_others
         self.slots_booked_by_user = slots_booked_by_user
-        self.week_dates = self.get_week_dates()
+        self.week_dates = dt_u.get_week_dates(target_datetime, offset)
         self.week_slots = self.get_week_slots()
-
-    def get_week_dates(self) -> list[dt.date]:
-        """Get the dates of a week from a date."""
-        week_starting_date = (
-            self.target_datetime.date()
-            - dt.timedelta(days=self.target_datetime.weekday())
-            + dt.timedelta(days=7 * self.offset)
-        )
-
-        week_dates = [week_starting_date]
-        for n_days in range(1, 7):
-            date = week_starting_date + dt.timedelta(days=n_days)
-            week_dates.append(date)
-
-        return week_dates
 
     def get_week_slots(self) -> m.WeekSlotsDict:
         """Get the week slots with their statuses."""
