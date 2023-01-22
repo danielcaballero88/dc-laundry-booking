@@ -18,7 +18,7 @@ export class LaundryBookingService {
   getWeek(offset: number): Observable<WeekDatesSlots> {
     const queryParams = new HttpParams().set('offset', offset);
     return this.http
-      .get<GetWeekResponse>(environment.apiUrl + '/booking/getweek', {
+      .get<GetWeekResponse>(environment.apiUrl + '/booking/get_week', {
         params: queryParams,
       })
       .pipe(
