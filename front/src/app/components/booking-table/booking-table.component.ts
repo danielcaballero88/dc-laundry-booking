@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { WeekDatesSlots } from 'src/app/models/shared';
 import { LaundryBookingService } from 'src/app/services/laundry-booking.service';
 import { LoginService } from 'src/app/services/login.service';
@@ -201,6 +201,9 @@ const placeholderTableData: WeekDatesSlots = {
   styleUrls: ['./booking-table.component.scss'],
 })
 export class BookingTableComponent implements OnInit {
+  @Input()
+  offset: number = 0;
+
   slotsData = {
     0: { startHour: 7, endHour: 10 },
     1: { startHour: 10, endHour: 13 },
@@ -238,7 +241,7 @@ export class BookingTableComponent implements OnInit {
   }
 
   updateTable() {
-    this.laundryBookingService.getWeek(0).subscribe({
+    this.laundryBookingService.getWeek(this.offset).subscribe({
       next: (data) => {
         console.log({ ...this.tableData });
         console.log({ ...data });
@@ -253,5 +256,15 @@ export class BookingTableComponent implements OnInit {
   getCellData(dateStr: string, slotIdStr: string) {
     const slotId = Number(slotIdStr);
     return this.tableData[dateStr][slotId];
+  }
+
+  nextWeek() {
+    this.offset++;
+    this.updateTable();
+  }
+
+  previousWeek() {
+    this.offset--;
+    this.updateTable();
   }
 }

@@ -22,7 +22,10 @@
       *ngSwitchCase="3"
       type="button"
       class="btn btn-success"
-      (click)="unbookSlot()"
+      data-bs-toggle="modal"
+      [attr.data-bs-target]="
+        '#modalUnbookAvailableSlot' + slotObj.date + slotObj.id
+      "
     >
       Booked by user
     </button>
@@ -54,18 +57,58 @@
         ></button>
       </div>
       <!-- Content -->
-      <button
-        type="submit"
-        class="btn btn-primary"
-        data-bs-dismiss="modal"
-        (click)="bookSlot()"
-      >
-        Yes
-      </button>
-      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-        Close
-      </button>
-      <!--  -->
+      <div class="modal-footer">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          data-bs-dismiss="modal"
+          (click)="bookSlot()"
+        >
+          Book slot
+        </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Unbook slot. -->
+<div
+  class="modal fade"
+  [id]="'modalUnbookAvailableSlot' + slotObj.date + slotObj.id"
+  tabindex="-1"
+  aria-labelledby="modalUnbookAvailableSlotLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalUnbookAvailableSlotLabel">
+          Remove this booking? {{ slotObj.date }}: {{ slotObj.id }}
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <!-- Content -->
+      <div class="modal-footer">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          data-bs-dismiss="modal"
+          (click)="unbookSlot()"
+        >
+          Yes, remove the booking.
+        </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
     </div>
   </div>
 </div>

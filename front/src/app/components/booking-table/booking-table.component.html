@@ -1,26 +1,34 @@
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Times</th>
-      <th *ngFor="let cellItem of tableData | keyvalue" scope="col">
-        <span>{{ cellItem.key }}</span>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <!-- Loop thorugh slots (one row per slot). -->
-    <tr *ngFor="let slotItem of slotsData | keyvalue">
-      <!-- Loop through dates (one column per date). -->
-      <th scope="row">
-        {{ slotItem.value.startHour }} - {{ slotItem.value.endHour }}
-      </th>
-      <td *ngFor="let cellItem of tableData | keyvalue">
-        <div class="cell-content">
-          <app-booking-slot
-            [slotObj]="getCellData(cellItem.key, slotItem.key)"
-          ></app-booking-slot>
-        </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<div class="table-container">
+  <div class="previous-button" (click)="previousWeek()">
+    <i class="bi bi-arrow-left-circle"></i>
+  </div>
+  <div class="next-button" (click)="nextWeek()">
+    <i class="bi bi-arrow-right-circle"></i>
+  </div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Times</th>
+        <th *ngFor="let cellItem of tableData | keyvalue" scope="col">
+          <span>{{ cellItem.key }}</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Loop thorugh slots (one row per slot). -->
+      <tr *ngFor="let slotItem of slotsData | keyvalue">
+        <!-- Loop through dates (one column per date). -->
+        <th scope="row">
+          {{ slotItem.value.startHour }} - {{ slotItem.value.endHour }}
+        </th>
+        <td *ngFor="let cellItem of tableData | keyvalue">
+          <div class="cell-content">
+            <app-booking-slot
+              [slotObj]="getCellData(cellItem.key, slotItem.key)"
+            ></app-booking-slot>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
