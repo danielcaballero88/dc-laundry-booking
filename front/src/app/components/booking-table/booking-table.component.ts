@@ -216,7 +216,7 @@ export class BookingTableComponent implements OnInit {
 
   constructor(
     private laundryBookingService: LaundryBookingService,
-    private loginService: LoginService,
+    public loginService: LoginService,
   ) {}
 
   ngOnInit(): void {

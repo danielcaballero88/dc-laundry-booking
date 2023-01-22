@@ -1,8 +1,12 @@
 <div class="table-container">
-  <div class="previous-button" (click)="previousWeek()">
+  <div
+    *ngIf="loginService.token"
+    class="previous-button"
+    (click)="previousWeek()"
+  >
     <i class="bi bi-arrow-left-circle"></i>
   </div>
-  <div class="next-button" (click)="nextWeek()">
+  <div *ngIf="loginService.token" class="next-button" (click)="nextWeek()">
     <i class="bi bi-arrow-right-circle"></i>
   </div>
   <table class="table">
