@@ -61,4 +61,24 @@ export class LaundryBookingService {
       },
     );
   }
+
+  unbookSlot(date: string, slotId: number): Observable<BookSlotResponse> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+
+    const body = {
+      date_str: date,
+      slot_id: slotId,
+    };
+    const bodyStr = JSON.stringify(body);
+
+    return this.http.delete<BookSlotResponse>(
+      environment.apiUrl + '/booking/unbook_slot',
+      {
+        body: bodyStr,
+        headers: headers,
+      },
+    );
+  }
 }

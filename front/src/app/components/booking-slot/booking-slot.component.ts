@@ -28,4 +28,18 @@ export class BookingSlotComponent implements OnInit {
         },
       });
   }
+
+  unbookSlot() {
+    this.laundryBookingService
+      .unbookSlot(this.slotObj.date, this.slotObj.id)
+      .subscribe({
+        next: (data) => {
+          console.log('Success: ', data);
+          this.slotObj.status = 1;
+        },
+        error: (err) => {
+          console.error('Error: ', err);
+        },
+      });
+  }
 }

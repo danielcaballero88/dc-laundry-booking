@@ -15,10 +15,15 @@
     >
       Available
     </button>
-    <button *ngSwitchCase="2" type="button" class="btn btn-warning">
+    <button *ngSwitchCase="2" type="button" class="btn btn-warning" disabled>
       Booked by other
     </button>
-    <button *ngSwitchCase="3" type="button" class="btn btn-success">
+    <button
+      *ngSwitchCase="3"
+      type="button"
+      class="btn btn-success"
+      (click)="unbookSlot()"
+    >
       Booked by user
     </button>
     <button *ngSwitchDefault type="button" class="btn btn-secondary" disabled>
