@@ -65,7 +65,7 @@ def _init_lb_manager(
     return lb_manager
 
 
-@router.get("/getweek")
+@router.get("/get_week")
 async def get_week(
     token: str = fa.Depends(auth_router.oauth2_scheme),
     offset: int = 0,
