@@ -1,4 +1,4 @@
-"""Routes for laundry booking."""
+"""Routes for slot booking."""
 import datetime as dt
 import typing as t
 
@@ -6,15 +6,15 @@ import fastapi as fa
 import pydantic as pyd
 
 from src import auth
-from src import laundry_booking as lb
+from src import slot_booking as lb
 from src import mongodb
-from src.laundry_booking import models as lb_m
-from src.laundry_booking.utils import datetime_utils as lb_dt_u
-from src.mongodb.models.laundry_booking import user as lb_user
+from src.slot_booking import models as lb_m
+from src.slot_booking.utils import datetime_utils as lb_dt_u
+from src.mongodb.models.slot_booking import user as lb_user
 from src.routers import auth_router
 
 lb_user_coll = mongodb.mongo_db_conn.get_coll(
-    db_name="dc_laundry_booking", coll_name="users"
+    db_name="dc_slot_booking", coll_name="users"
 )
 
 router = fa.APIRouter(
@@ -32,10 +32,10 @@ async def add_user(
     user_add: lb_user.UserAdd,
     token: str = fa.Depends(auth_router.oauth2_scheme),
 ) -> lb_user.UserAdd:
-    """Add a user to the Laundry Booking DB.
+    """Add a user to the Slot Booking DB.
 
     The user must already exist in the Auth DB, and now they complete their data for the
-    Laundry Booking DB.
+    Slot Booking DB.
     """
     token_data = auth.decode_token(token)
     user_add.upsert(user_coll=lb_user_coll, username=token_data.username)
@@ -47,7 +47,7 @@ def _init_lb_manager(
     user_db: lb_user.User,
     target_datetime: dt.datetime,
     offset: int,
-) -> lb.LaundryBookingManager:
+) -> lb.SlotBookingManager:
     bookings_by_user = user_db.get_bookings()
 
     bookings_by_others = user_db.get_bookings_by_others(
@@ -55,7 +55,7 @@ def _init_lb_manager(
         username=username,
     )
 
-    lb_manager = lb.LaundryBookingManager(
+    lb_manager = lb.SlotBookingManager(
         offset=offset,
         target_datetime=target_datetime,
         slots_booked_by_others=bookings_by_others,
@@ -111,7 +111,7 @@ def _get_week_for_booking_slot(
     username: str,
     date: dt.date,
     user_db: lb_user.User,
-) -> lb.LaundryBookingManager:
+) -> lb.SlotBookingManager:
     """Before booking/unbooking a slot, get the week slots."""
     # Calculate the offset needed to get the correct week.
     now = dt.datetime.now()

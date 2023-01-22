@@ -1,24 +1,24 @@
 version: '3.9'
 
 services:
-  dc-laundry-booking_api:
+  dc-slot-booking_api:
     build: ./api
     volumes:
       - ./api:/usr/local/api
     command: uvicorn src.main:app --host 0.0.0.0 --reload
     environment:
-      MONGO_HOST: dc-laundry-booking_mongodb
+      MONGO_HOST: dc-slot-booking_mongodb
       MONGO_USER: admin
       MONGO_PASS: admin
     ports:
       - "8000:8000"
       - "4444:4444"  # rpdb port for debugging.
     networks:
-      - dc-laundry-booking_network
+      - dc-slot-booking_network
     depends_on:
-      - dc-laundry-booking_mongodb
+      - dc-slot-booking_mongodb
 
-  dc-laundry-booking_mongodb:
+  dc-slot-booking_mongodb:
     image: mongo:5.0
     ports:
       - "27017:27017"
@@ -27,11 +27,11 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=admin
       - MONGO_INITDB_ROOT_DATABASE=admin
     volumes:
-      - dc-laundry-booking_volume_mongodb:/data/db
+      - dc-slot-booking_volume_mongodb:/data/db
     networks:
-      - dc-laundry-booking_network
+      - dc-slot-booking_network
 
-  dc-laundry-booking_front:
+  dc-slot-booking_front:
     build: ./front
     volumes:
       - ./front:/usr/local/front
@@ -39,13 +39,13 @@ services:
     ports:
       - "4200:4200"
     networks:
-      - dc-laundry-booking_network
+      - dc-slot-booking_network
     depends_on:
-      - dc-laundry-booking_api
+      - dc-slot-booking_api
 
 volumes:
-  dc-laundry-booking_volume_mongodb:
+  dc-slot-booking_volume_mongodb:
 networks:
-  dc-laundry-booking_network:
-    name: dc-laundry-booking_network
+  dc-slot-booking_network:
+    name: dc-slot-booking_network
     driver: bridge

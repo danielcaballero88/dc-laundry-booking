@@ -1,6 +1,6 @@
-"""Module to interact with the "laundry_booking.user" collection.
+"""Module to interact with the "slot_booking.user" collection.
 
-The collection is assigned to the laundry_booking.LaundryBookingManager class on
+The collection is assigned to the slot_booking.SlotBookingManager class on
 initialization and it's not necessarily "auth.user", but it can be any desired database
 and collection can be used.
 """
@@ -14,12 +14,12 @@ import pydantic as pyd
 import pymongo.collection as pym_coll
 import pymongo.results as pym_res
 
-from src.laundry_booking import models as lb_m
-from src.laundry_booking.utils import datetime_utils as lb_dp
+from src.slot_booking import models as lb_m
+from src.slot_booking.utils import datetime_utils as lb_dp
 
 
 class UserAdd(pyd.BaseModel):
-    """Model to add a user to the Laundry Booking DB."""
+    """Model to add a user to the Slot Booking DB."""
 
     appartment: int
     name: str
@@ -42,12 +42,12 @@ class UserAdd(pyd.BaseModel):
 
 
 class User(UserAdd):
-    """Model to interact with a user of the Laundry Booking DB."""
+    """Model to interact with a user of the Slot Booking DB."""
 
     def upsert(self, *args, **kwargs):
         """Override parent class 'upsert' method to make it invalid for this class."""
         raise NotImplementedError(
-            "Not allowed to directly add or modify Laundry Booking users."
+            "Not allowed to directly add or modify Slot Booking users."
         )
 
     @classmethod
@@ -57,7 +57,7 @@ class User(UserAdd):
         if not user_dict:
             raise fa.HTTPException(
                 status_code=fa.status.HTTP_404_NOT_FOUND,
-                detail="User data not found in the Laundry Booking DB.",
+                detail="User data not found in the Slot Booking DB.",
             )
         user_db = cls(**user_dict)
         return user_db

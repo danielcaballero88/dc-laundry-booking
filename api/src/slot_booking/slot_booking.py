@@ -1,4 +1,4 @@
-"""Package with the Laundry Booking logic."""
+"""Package with the Slot Booking logic."""
 import copy
 import datetime as dt
 import typing as t
@@ -7,8 +7,8 @@ from . import models as m
 from .utils import datetime_utils as dt_u
 
 
-class LaundryBookingManager:
-    """Manager of the laundry room.
+class SlotBookingManager:
+    """Booking manager of the slots.
 
     The manager parses the date and slots information for a given week, according to the
     given information about currently unavailable and booked slots for the concerning

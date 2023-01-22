@@ -1,4 +1,4 @@
-"""Data models and enums (and custom types) for the Laundry Booking package."""
+"""Data models and enums (and custom types) for the Slot Booking package."""
 import datetime as dt
 import enum as e
 import typing as t

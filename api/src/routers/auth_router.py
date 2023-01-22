@@ -6,9 +6,7 @@ from fastapi import security as fas
 from src import auth, mongodb
 from src.mongodb.models.auth import user as auth_user
 
-user_coll = mongodb.mongo_db_conn.get_coll(
-    db_name="dc_laundry_booking", coll_name="auth"
-)
+user_coll = mongodb.mongo_db_conn.get_coll(db_name="dc_slot_booking", coll_name="auth")
 
 router = fa.APIRouter(
     prefix="/auth",

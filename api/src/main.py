@@ -4,7 +4,7 @@ from fastapi.middleware import cors as fa_cors
 
 
 from src.mongodb import mongodb
-from src.routers import auth_router, laundry_booking_router
+from src.routers import auth_router, slot_booking_router
 
 app = fa.FastAPI()
 
@@ -46,4 +46,4 @@ async def hello_world():
 
 app.include_router(auth_router.router)
 
-app.include_router(laundry_booking_router.router)
+app.include_router(slot_booking_router.router)

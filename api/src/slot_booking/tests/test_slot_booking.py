@@ -1,12 +1,12 @@
-"""Tests for the laundry_booking module."""
+"""Tests for the slot_booking module."""
 import datetime as dt
 
 import pytest  # pylint: disable=unused-import
 
-from .. import laundry_booking as lb
+from .. import slot_booking as lb
 from .. import models as lbm
 from ..utils import datetime_utils as dt_u
-from .data.data_laundry_booking import TEST_DATA
+from .data.data_slot_booking import TEST_DATA
 
 
 class ParsedTestData:
@@ -59,13 +59,13 @@ class ParsedTestData:
         taken_slots[date].append(slot_id)
 
 
-def test_laundry_booking_manager():
-    "Test the LaundryBookingManager class."
+def test_slot_booking_manager():
+    "Test the SlotBookingManager class."
     parsed_test_data = ParsedTestData()
-    laundry_booking_manager = lb.LaundryBookingManager(
+    slot_booking_manager = lb.SlotBookingManager(
         target_datetime=parsed_test_data.target_datetime,
         offset=0,
         slots_booked_by_others=parsed_test_data.booked_by_others,
         slots_booked_by_user=parsed_test_data.booked_by_user,
     )
-    assert laundry_booking_manager.week_slots == parsed_test_data.expected_result
+    assert slot_booking_manager.week_slots == parsed_test_data.expected_result

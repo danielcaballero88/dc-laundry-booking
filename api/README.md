@@ -1,1 +1,1 @@
-# API for DC Laundry Booking
+# API for DC Slot Booking
