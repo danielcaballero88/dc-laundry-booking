@@ -4,7 +4,7 @@
   type="button"
   class="btn btn-primary"
   data-bs-toggle="modal"
-  data-bs-target="#exampleModal"
+  data-bs-target="#loginModal"
 >
   Login
 </button>
@@ -12,23 +12,24 @@
   *ngIf="isLoggedIn"
   type="button"
   class="btn btn-primary"
-  (click)="logout()"
+  data-bs-toggle="modal"
+  data-bs-target="#loginModal"
 >
   Logout
 </button>
 
-<!-- Modal -->
+<!-- Login modal -->
 <div
   class="modal fade"
-  id="exampleModal"
+  id="loginModal"
   tabindex="-1"
-  aria-labelledby="exampleModalLabel"
+  aria-labelledby="loginModalLabel"
   aria-hidden="true"
 >
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Login</h5>
+        <h5 class="modal-title" id="loginModalLabel">Login</h5>
         <button
           type="button"
           class="btn-close"
@@ -37,7 +38,7 @@
         ></button>
       </div>
       <!-- Login Form -->
-      <form [formGroup]="loginForm" (ngSubmit)="login()">
+      <form *ngIf="!isLoggedIn" [formGroup]="loginForm" (ngSubmit)="login()">
         <div class="modal-body">
           <div class="mb-3 row">
             <label for="inputUsername" class="col-sm-2 col-form-label">
@@ -65,14 +66,6 @@
               />
             </div>
           </div>
-          <!-- Display for debugging -->
-          <div>
-            <span>Username: {{ loginForm.value.username }}</span>
-          </div>
-          <div>
-            <span>Passworwd: {{ loginForm.value.password }}</span>
-          </div>
-          <!--  -->
         </div>
         <div class="modal-footer">
           <button
@@ -86,6 +79,29 @@
           <button type="submit" class="btn btn-primary">Login</button>
         </div>
       </form>
+      <!--  -->
+      <!-- Logout content -->
+      <div *ngIf="isLoggedIn" class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          data-bs-dismiss="modal"
+          (click)="logout()"
+        >
+          Logout
+        </button>
+      </div>
+      <!--  -->
+      <!-- Display for debugging -->
+      <div>
+        <span>Username: {{ loginForm.value.username }}</span>
+      </div>
+      <div>
+        <span>Passworwd: {{ loginForm.value.password }}</span>
+      </div>
       <!--  -->
     </div>
   </div>
