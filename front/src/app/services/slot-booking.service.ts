@@ -12,7 +12,7 @@ import { map, Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class LaundryBookingService {
+export class SlotBookingService {
   constructor(private http: HttpClient) {}
 
   getWeek(offset: number): Observable<WeekDatesSlots> {

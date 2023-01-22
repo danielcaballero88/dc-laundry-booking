@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { SlotObj } from 'src/app/models/shared';
-import { LaundryBookingService } from 'src/app/services/laundry-booking.service';
+import { SlotBookingService } from 'src/app/services/slot-booking.service';
 
 @Component({
   selector: 'app-booking-slot',
@@ -11,12 +11,12 @@ export class BookingSlotComponent implements OnInit {
   @Input()
   slotObj!: SlotObj;
 
-  constructor(private laundryBookingService: LaundryBookingService) {}
+  constructor(private slotBookingService: SlotBookingService) {}
 
   ngOnInit(): void {}
 
   bookSlot() {
-    this.laundryBookingService
+    this.slotBookingService
       .bookSlot(this.slotObj.date, this.slotObj.id)
       .subscribe({
         next: (data) => {
@@ -30,7 +30,7 @@ export class BookingSlotComponent implements OnInit {
   }
 
   unbookSlot() {
-    this.laundryBookingService
+    this.slotBookingService
       .unbookSlot(this.slotObj.date, this.slotObj.id)
       .subscribe({
         next: (data) => {

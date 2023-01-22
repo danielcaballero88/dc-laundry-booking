@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { WeekDatesSlots } from 'src/app/models/shared';
-import { LaundryBookingService } from 'src/app/services/laundry-booking.service';
+import { SlotBookingService } from 'src/app/services/slot-booking.service';
 import { LoginService } from 'src/app/services/login.service';
 
 const placeholderTableData: WeekDatesSlots = {
@@ -215,7 +215,7 @@ export class BookingTableComponent implements OnInit {
   tableData: WeekDatesSlots = { ...placeholderTableData };
 
   constructor(
-    private laundryBookingService: LaundryBookingService,
+    private slotBookingService: SlotBookingService,
     public loginService: LoginService,
   ) {}
 
@@ -241,7 +241,7 @@ export class BookingTableComponent implements OnInit {
   }
 
   updateTable() {
-    this.laundryBookingService.getWeek(this.offset).subscribe({
+    this.slotBookingService.getWeek(this.offset).subscribe({
       next: (data) => {
         console.log({ ...this.tableData });
         console.log({ ...data });
