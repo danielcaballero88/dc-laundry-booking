@@ -1,7 +1,7 @@
 """Tests for the slot_booking module."""
 import datetime as dt
 
-import pytest  # pylint: disable=unused-import
+import unittest
 
 from .. import slot_booking as lb
 from .. import models as lbm
@@ -59,13 +59,19 @@ class ParsedTestData:
         taken_slots[date].append(slot_id)
 
 
-def test_slot_booking_manager():
-    "Test the SlotBookingManager class."
-    parsed_test_data = ParsedTestData()
-    slot_booking_manager = lb.SlotBookingManager(
-        target_datetime=parsed_test_data.target_datetime,
-        offset=0,
-        slots_booked_by_others=parsed_test_data.booked_by_others,
-        slots_booked_by_user=parsed_test_data.booked_by_user,
-    )
-    assert slot_booking_manager.week_slots == parsed_test_data.expected_result
+class TestSlotBookingManager(unittest.TestCase):
+    """Tests for the SlotBookingManager class"""
+
+    def test_week_slots(self):
+        "Test the SlotBookingManager class."
+        parsed_test_data = ParsedTestData()
+        slot_booking_manager = lb.SlotBookingManager(
+            target_datetime=parsed_test_data.target_datetime,
+            offset=0,
+            slots_booked_by_others=parsed_test_data.booked_by_others,
+            slots_booked_by_user=parsed_test_data.booked_by_user,
+        )
+
+        self.assertEqual(
+            slot_booking_manager.week_slots, parsed_test_data.expected_result
+        )
