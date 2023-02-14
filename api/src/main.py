@@ -2,7 +2,6 @@
 import fastapi as fa
 from fastapi.middleware import cors as fa_cors
 
-
 from src.mongodb import mongodb
 from src.routers import auth_router, slot_booking_router
 

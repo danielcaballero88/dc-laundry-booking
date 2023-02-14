@@ -1,0 +1,13 @@
+{
+  "custom_users": [
+    {
+      "username": "dan",
+      "email": "dan@dan.dan",
+      "password": "dan",
+      "appartment": 0,
+      "name": "Daniel Caballero",
+      "bookings": {}
+    }
+  ],
+  "num_test_users": 5
+}

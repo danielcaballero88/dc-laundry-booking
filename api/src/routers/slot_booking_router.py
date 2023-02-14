@@ -5,13 +5,12 @@ import typing as t
 import fastapi as fa
 import pydantic as pyd
 
-from src import auth
+from src import auth, mongodb
 from src import slot_booking as lb
-from src import mongodb
-from src.slot_booking import models as lb_m
-from src.slot_booking.utils import datetime_utils as lb_dt_u
 from src.mongodb.models.slot_booking import user as lb_user
 from src.routers import auth_router
+from src.slot_booking import models as lb_m
+from src.slot_booking.utils import datetime_utils as lb_dt_u
 
 lb_user_coll = mongodb.mongo_db_conn.get_coll(
     db_name="dc_slot_booking", coll_name="users"

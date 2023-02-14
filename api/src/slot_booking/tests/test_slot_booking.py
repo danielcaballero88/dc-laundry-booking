@@ -1,10 +1,9 @@
 """Tests for the slot_booking module."""
 import datetime as dt
-
 import unittest
 
-from .. import slot_booking as lb
 from .. import models as lbm
+from .. import slot_booking as lb
 from ..utils import datetime_utils as dt_u
 from .data.data_slot_booking import TEST_DATA
 
