@@ -1,6 +1,17 @@
-.container {
+.button-container {
+  min-width: 7em;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  button {
+    display: block;
+    width: 100%;
+    height: 100%;
+    white-space: normal;
+    word-wrap: break-word;
+  }
 }
