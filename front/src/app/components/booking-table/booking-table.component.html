@@ -13,7 +13,12 @@
     <thead>
       <tr>
         <th scope="col">Times</th>
-        <th *ngFor="let cellItem of tableData | keyvalue" scope="col">
+        <th
+          *ngFor="let cellItem of tableData | keyvalue; let idx = index"
+          scope="col"
+        >
+          <span>{{ daysOfTheWeek[idx] }}</span>
+          <br />
           <span>{{ cellItem.key }}</span>
         </th>
       </tr>

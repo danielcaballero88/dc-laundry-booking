@@ -204,6 +204,16 @@ export class BookingTableComponent implements OnInit {
   @Input()
   offset: number = 0;
 
+  daysOfTheWeek: string[] = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+  ];
+
   slotsData = {
     0: { startHour: 7, endHour: 10 },
     1: { startHour: 10, endHour: 13 },
